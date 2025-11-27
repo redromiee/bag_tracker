@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bag Tracker</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <!-- Selection Screen -->
+    <div id="selection-screen">
+        <div class="split-half black" onclick="selectType('FWD')">
+            <span>FWD</span>
+        </div>
+        <div class="split-half white" onclick="selectType('RTO')">
+            <span>RTO</span>
+        </div>
+    </div>
+
+    <!-- Scanning Screen -->
+    <div id="scanning-screen" class="hidden">
+        <div class="header">
+            <button class="back-btn" onclick="resetToSelection()">← Back</button>
+            <h1 id="mode-title">FWD</h1>
+        </div>
+
+        <div id="status-area" class="status hidden"></div>
+
+        <div class="step-indicator">
+            <h2 id="current-instruction">Scan Bin QR</h2>
+        </div>
+
+        <div id="reader"></div>
+
+        <div id="manual-entry">
+            <input type="text" id="manual-input" placeholder="Scan or Enter ID...">
+            <button onclick="handleManualInput()">Submit</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
