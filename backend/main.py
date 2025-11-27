@@ -37,12 +37,21 @@ def record_scan(data: ScanData):
         # Define the scope
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         
-        # Load credentials
-        creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
-        if not os.path.exists(creds_path):
-            raise FileNotFoundError("credentials.json not found in backend folder")
+        # Load credentials - try environment variable first, then local file
+        import json
+        creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+        
+        if creds_json:
+            # Production: use environment variable
+            creds_dict = json.loads(creds_json)
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        else:
+            # Local development: use credentials.json file
+            creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+            if not os.path.exists(creds_path):
+                raise FileNotFoundError("credentials.json not found in backend folder and GOOGLE_CREDENTIALS_JSON env var not set")
+            creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
             
-        creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
         client = gspread.authorize(creds)
         
         # Open the sheet - CHANGE THIS TO YOUR SHEET NAME
