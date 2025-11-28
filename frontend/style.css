@@ -559,25 +559,6 @@ button:active {
     border-radius: 50%;
     transition: transform 0.3s ease;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-
-body.dark-mode .toggle-track {
-    background: var(--accent);
-}
-
-margin-top: 30px;
-padding: 20px;
-background: var(--bg-secondary);
-border-radius: 16px;
-border: 1px solid var(--border);
-}
-
-.recent-scans h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
     margin-bottom: 15px;
     color: var(--text-primary);
 }
