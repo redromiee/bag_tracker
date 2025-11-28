@@ -157,19 +157,6 @@ function toggleProfileMenu() {
     dropdown.classList.toggle('hidden');
 
     // Populate user info if not already done
-    const userName = localStorage.getItem('userName');
-    const userBranch = localStorage.getItem('userBranch');
-
-    if (userName && userBranch) {
-        document.getElementById('dropdown-user-name').textContent = userName;
-        document.getElementById('dropdown-user-branch').textContent = userBranch;
-    }
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-    const profileMenu = document.querySelector('.profile-menu');
-    const dropdown = document.getElementById('profile-dropdown');
 
     if (profileMenu && !profileMenu.contains(e.target)) {
         dropdown?.classList.add('hidden');
