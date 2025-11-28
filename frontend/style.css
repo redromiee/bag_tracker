@@ -479,26 +479,7 @@ button:active {
     transform: scale(1.05);
 }
 
-.profile-icon:active {
-    transform: scale(0.95);
-}
-
-.profile-dropdown {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px var(--shadow);
-    min-width: 200px;
-    z-index: 1000;
-    overflow: hidden;
-}
-
-.profile-info {
-    padding: 16px;
-    border-bottom: 1px solid var(--border);
+border-bottom: 1px solid var(--border);
 }
 
 .profile-name {
