@@ -621,46 +621,6 @@ body.dark-mode .toggle-thumb {
 
 .modal-title {
     font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 12px;
-}
-
-.modal-message {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    left: 20px;
-    z-index: 2000;
-    width: 56px;
-    height: 56px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 12px var(--shadow);
-    transition: all 0.3s ease;
-}
-
-.download-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px var(--shadow);
-}
-
-.download-btn:active {
-    transform: scale(0.95);
-}
-
-.download-btn svg {
-    color: var(--text-primary);
-}
-
-/* Date Range Modal Specific Styles */
-.date-inputs {
-    display: flex;
-    flex-direction: column;
     gap: 16px;
     margin-bottom: 12px;
 }
