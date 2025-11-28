@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<!DOCTYPE html>
-<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -23,7 +21,6 @@
         </div>
     </div>
 
-
     <!-- Selection Screen -->
     <div id="selection-screen">
         <div class="split-half black" onclick="selectType('FWD')">
@@ -39,6 +36,7 @@
         <div class="header">
             <button class="back-btn" onclick="resetToSelection()">← Back</button>
             <h1 id="mode-title">FWD</h1>
+            <button id="change-bin-btn" class="change-bin-btn hidden" onclick="changeBin()">Change Bin</button>
         </div>
 
         <div id="status-area" class="status hidden"></div>

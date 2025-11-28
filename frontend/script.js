@@ -82,6 +82,7 @@ function handleInput(text) {
         currentStep = 'BAG';
         updateInstruction();
         showMessage(`Bin ${text} scanned. Now scan Bag.`, 'success');
+        document.getElementById('change-bin-btn').classList.remove('hidden');
     } else if (currentStep === 'BAG') {
         scanData.bag_id = text;
         submitData();
@@ -95,6 +96,15 @@ function updateInstruction() {
     } else {
         instr.innerText = `Bin: ${scanData.bin_id} - Scan Bag`;
     }
+}
+
+function changeBin() {
+    currentStep = 'BIN';
+    scanData.bin_id = null;
+    scanData.bag_id = null;
+    updateInstruction();
+    document.getElementById('change-bin-btn').classList.add('hidden');
+    showMessage('Ready to scan new Bin.', 'success');
 }
 
 function handleManualInput() {
@@ -138,11 +148,10 @@ async function submitData() {
         if (result.status === 'success') {
             showMessage(`Saved! ${scanType} | Bin: ${scanData.bin_id} | Bag: ${scanData.bag_id}`, 'success');
 
-            // Reset for next bag, keep same Bin? Or reset all?
-            // Usually better to reset to Bin for safety, or keep Bin if doing multiple bags per bin.
-            // Let's reset to Bin for now as per "move to scanning Bin name" request.
-            currentStep = 'BIN';
-            scanData.bin_id = null;
+            // PERSISTENT BIN LOGIC:
+            // Stay on 'BAG' step, keep bin_id, clear bag_id
+            currentStep = 'BAG';
+            // scanData.bin_id remains same
             scanData.bag_id = null;
             updateInstruction();
 
