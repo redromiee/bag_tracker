@@ -37,60 +37,45 @@
         }
     </script>
 </head>
-
-<body>
-
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <div class="toggle-track">
-            <div class="toggle-thumb">
-                <span class="toggle-icon">☀️</span>
-            </div>
-        </div>
+<span>FWD</span>
+</div>
+<div class="split-half white" onclick="selectType('RTO')">
+    <span>RTO</span>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+    </svg>
+</div>
+<div id="profile-dropdown" class="profile-dropdown hidden">
+    <div class="profile-info">
+        <div class="profile-name" id="dropdown-user-name"></div>
+        <div class="profile-branch" id="dropdown-user-branch"></div>
     </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
 
-    <!-- Selection Screen -->
-    <div id="selection-screen">
-        <div class="split-half black" onclick="selectType('FWD')">
-            <span>FWD</span>
-        </div>
-        <div class="split-half white" onclick="selectType('RTO')">
-            <span>RTO</span>
-            <circle cx="12" cy="8" r="4" />
-            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
-            </svg>
-        </div>
-        <div id="profile-dropdown" class="profile-dropdown hidden">
-            <div class="profile-info">
-                <div class="profile-name" id="dropdown-user-name"></div>
-                <div class="profile-branch" id="dropdown-user-branch"></div>
-            </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-    </div>
-    </div>
+<div id="status-area" class="status hidden"></div>
 
-    <div id="status-area" class="status hidden"></div>
+<div class="step-indicator">
+    <h2 id="current-instruction">Scan Bin QR</h2>
+</div>
 
-    <div class="step-indicator">
-        <h2 id="current-instruction">Scan Bin QR</h2>
-    </div>
+<div id="reader"></div>
 
-    <div id="reader"></div>
+<div id="manual-entry">
+    <input type="text" id="manual-input" placeholder="Scan or Enter ID...">
+    <button onclick="handleManualInput()">Submit</button>
+</div>
 
-    <div id="manual-entry">
-        <input type="text" id="manual-input" placeholder="Scan or Enter ID...">
-        <button onclick="handleManualInput()">Submit</button>
-    </div>
+<!-- Recent Scans History -->
+<div id="recent-scans" class="recent-scans hidden">
+    <h3>Recent Scans</h3>
+    <div id="scans-list"></div>
+</div>
+</div>
 
-    <!-- Recent Scans History -->
-    <div id="recent-scans" class="recent-scans hidden">
-        <h3>Recent Scans</h3>
-        <div id="scans-list"></div>
-    </div>
-    </div>
-
-    <script src="/static/script.js"></script>
+<script src="/static/script.js"></script>
 </body>
 
 </html>
