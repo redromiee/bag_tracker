@@ -152,6 +152,55 @@ button:active {
     display: none !important;
 }
 
+/* Selection Screen */
+#selection-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.split-half {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.split-half.black {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+.split-half.white {
+    background-color: var(--white);
+    color: var(--black);
+    border-top: 2px solid var(--black);
+}
+
+body.dark-mode .split-half.white {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-top: 2px solid var(--border);
+}
+
+.split-half:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+}
+
+.toggle-icon {
+    font-size: 14px;
+}
+
 /* Recent Scans */
 .recent-scans {
     width: 100%;
