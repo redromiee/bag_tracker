@@ -151,12 +151,57 @@ function loadTheme() {
 // Initialize theme on load
 loadTheme();
 
+// --- Periodic Approval Check ---
+// Check approval status every 5 minutes to auto-logout revoked users
+function checkApprovalStatus() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+
+    fetch('/check_approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' && !data.approved) {
+                // User's approval has been revoked
+                alert('⚠️ Your access has been revoked by the administrator. You will be logged out now.');
+                localStorage.clear();
+                window.location.href = '/login';
+            }
+        })
+        .catch(error => {
+            console.error('Approval check failed:', error);
+        });
+}
+
+// Check approval status every 5 minutes
+setInterval(checkApprovalStatus, 5 * 60 * 1000);
+
+// Also check on page load
+checkApprovalStatus();
+
+
 // --- Profile Menu Logic ---
 function toggleProfileMenu() {
     const dropdown = document.getElementById('profile-dropdown');
     dropdown.classList.toggle('hidden');
 
     // Populate user info if not already done
+    const userName = localStorage.getItem('userName');
+    const userBranch = localStorage.getItem('userBranch');
+
+    if (userName && userBranch) {
+        document.getElementById('dropdown-user-name').textContent = userName;
+        document.getElementById('dropdown-user-branch').textContent = userBranch;
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const profileMenu = document.querySelector('.profile-menu');
+    const dropdown = document.getElementById('profile-dropdown');
 
     if (profileMenu && !profileMenu.contains(e.target)) {
         dropdown?.classList.add('hidden');
