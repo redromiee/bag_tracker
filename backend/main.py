@@ -311,11 +311,6 @@ def delete_scan(data: ScanData):
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-
 @app.post("/download_data")
 def download_data(request: DownloadRequest):
     """Download scan data for a date range as Excel file"""
@@ -393,3 +388,7 @@ def download_data(request: DownloadRequest):
         import traceback
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
