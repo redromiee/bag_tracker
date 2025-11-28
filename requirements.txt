@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+gspread==5.12.4
+oauth2client
+typing_extensions
+gunicorn
