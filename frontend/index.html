@@ -66,7 +66,6 @@
             <div style="text-align: center; flex: 1; display: contents;">
                 <h1 id="mode-title">FWD</h1>
             </div>
-            <button id="change-bin-btn" class="change-bin-btn hidden" onclick="changeBin()">Change Bin</button>
 
             <!-- Profile Menu -->
             <div class="profile-menu">
@@ -94,34 +93,34 @@
 
         <div id="reader"></div>
 
-<div id="manual-entry">
-    <input type="text" id="manual-input" placeholder="Scan or Enter ID...">
-    <button onclick="handleManualInput()">Submit</button>
-</div>
+        <div id="manual-entry">
+            <input type="text" id="manual-input" placeholder="Scan or Enter ID...">
+            <button onclick="handleManualInput()">Submit</button>
+        </div>
 
-<!-- Change Bin Button -->
-<button id="change-bin-btn" class="change-bin-btn-full hidden" onclick="changeBin()">Change Bin</button>
+        <!-- Change Bin Button -->
+        <button id="change-bin-btn" class="change-bin-btn-full hidden" onclick="changeBin()">Change Bin</button>
 
-<!-- Recent Scans History -->
-<div id="recent-scans" class="recent-scans hidden">
-    <h3>Recent Scans</h3>
-    <div id="scans-list"></div>
-</div>
-</div>
-<!-- Custom Confirmation Modal -->
-<div id="confirm-modal" class="modal hidden">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-        <h3 class="modal-title">Delete Scan?</h3>
-        <p class="modal-message" id="modal-message"></p>
-        <div class="modal-buttons">
-            <button class="modal-btn modal-btn-cancel" id="modal-no">No</button>
-            <button class="modal-btn modal-btn-confirm" id="modal-yes">Yes</button>
+        <!-- Recent Scans History -->
+        <div id="recent-scans" class="recent-scans hidden">
+            <h3>Recent Scans</h3>
+            <div id="scans-list"></div>
         </div>
     </div>
-</div>
+    <!-- Custom Confirmation Modal -->
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3 class="modal-title">Delete Scan?</h3>
+            <p class="modal-message" id="modal-message"></p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="modal-no">No</button>
+                <button class="modal-btn modal-btn-confirm" id="modal-yes">Yes</button>
+            </div>
+        </div>
+    </div>
 
-<script src="/static/script.js"></script>
+    <script src="/static/script.js"></script>
 </body>
 
 </html>
