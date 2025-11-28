@@ -5,3 +5,5 @@ oauth2client
 typing_extensions
 gunicorn
 pytz
+bcrypt
+pyjwt

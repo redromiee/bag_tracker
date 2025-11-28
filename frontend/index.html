@@ -8,6 +8,44 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <script>
+        // Auth check - redirect to login if not authenticated
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/login';
+        } else {
+            // Verify token
+            fetch('/verify_token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        localStorage.removeItem('authToken');
+                        window.location.href = '/login';
+                    } else {
+                        // Display user info
+                        const userName = localStorage.getItem('userName') || data.user.name;
+                        const userBranch = localStorage.getItem('userBranch') || data.user.branch;
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const userInfo = document.getElementById('user-info');
+                            if (userInfo) {
+                                userInfo.textContent = `${userName} | ${userBranch}`;
+                            }
+                        });
+                    }
+                });
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userBranch');
+            window.location.href = '/login';
+        }
+    </script>
 </head>
 
 <body>
@@ -35,8 +73,12 @@
     <div id="scanning-screen" class="hidden">
         <div class="header">
             <button class="back-btn" onclick="resetToSelection()">← Back</button>
-            <h1 id="mode-title">FWD</h1>
+            <div style="text-align: center; flex: 1;">
+                <h1 id="mode-title">FWD</h1>
+                <div id="user-info" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;"></div>
+            </div>
             <button id="change-bin-btn" class="change-bin-btn hidden" onclick="changeBin()">Change Bin</button>
+            <button class="change-bin-btn" onclick="logout()" style="background: #FF3B30;">Logout</button>
         </div>
 
         <div id="status-area" class="status hidden"></div>
