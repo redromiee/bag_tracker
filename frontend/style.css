@@ -645,131 +645,109 @@ body.dark-mode .toggle-thumb {
     font-size: 1rem;
     font-weight: 600;
     border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
 
-.modal-btn-cancel {
-    background: var(--bg-tertiary);
-    color: white;
-}
+    .modal-btn-confirm:hover {
+        background: #E6342A;
+        transform: scale(1.02);
+    }
 
-body.dark-mode .modal-btn-cancel {
-    color: var(--text-primary);
-}
+    .modal-btn:active {
+        transform: scale(0.98);
+    }
 
-.modal-btn-cancel:hover {
-    opacity: 0.8;
-}
+    .change-bin-btn-full {
+        width: 100%;
+        max-width: 500px;
+        margin-top: 10px;
+        background-color: var(--bg-tertiary);
+        color: var(--text-inverse);
+        border: none;
+        padding: 15px 25px;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+    }
 
-.modal-btn-confirm {
-    background: #FF3B30;
-    color: white;
-}
+    .change-bin-btn-full:hover {
+        opacity: 0.8;
+    }
 
-.modal-btn-confirm:hover {
-    background: #E6342A;
-    transform: scale(1.02);
-}
+    .change-bin-btn-full:active {
+        transform: scale(0.98);
+    }
 
-.modal-btn:active {
-    transform: scale(0.98);
-}
+    /* Download Button */
+    .download-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 2000;
+        width: 56px;
+        height: 56px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: all 0.3s ease;
+    }
 
-.change-bin-btn-full {
-    width: 100%;
-    max-width: 500px;
-    margin-top: 10px;
-    background-color: var(--bg-tertiary);
-    color: var(--text-inverse);
-    border: none;
-    padding: 15px 25px;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-}
+    .download-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px var(--shadow);
+    }
 
-.change-bin-btn-full:hover {
-    opacity: 0.8;
-}
+    .download-btn:active {
+        transform: scale(0.95);
+    }
 
-.change-bin-btn-full:active {
-    transform: scale(0.98);
-}
+    .download-btn svg {
+        color: var(--text-primary);
+    }
 
-/* Download Button */
-.download-btn {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    z-index: 2000;
-    width: 56px;
-    height: 56px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 12px var(--shadow);
-    transition: all 0.3s ease;
-}
+    /* Date Range Modal Specific Styles */
+    .date-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
 
-.download-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px var(--shadow);
-}
+    .date-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-.download-btn:active {
-    transform: scale(0.95);
-}
+    .date-input-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
 
-.download-btn svg {
-    color: var(--text-primary);
-}
+    .date-input {
+        padding: 12px;
+        font-size: 1rem;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        outline: none;
+        transition: border-color 0.2s;
+    }
 
-/* Date Range Modal Specific Styles */
-.date-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 12px;
-}
+    .date-input:focus {
+        border-color: var(--accent);
+    }
 
-.date-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.date-input-group label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.date-input {
-    padding: 12px;
-    font-size: 1rem;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.date-input:focus {
-    border-color: var(--accent);
-}
-
-.date-range-hint {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    font-style: italic;
-}
+    .date-range-hint {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+        font-style: italic;
+    }
