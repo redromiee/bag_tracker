@@ -629,34 +629,6 @@ body.dark-mode .toggle-thumb {
 .modal-message {
     font-size: 1rem;
     color: var(--text-secondary);
-    margin-bottom: 24px;
-    line-height: 1.5;
-    white-space: pre-line;
-}
-
-.modal-buttons {
-    color: var(--text-inverse);
-    border: none;
-    padding: 15px 25px;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-}
-
-.change-bin-btn-full:hover {
-    opacity: 0.8;
-}
-
-.change-bin-btn-full:active {
-    transform: scale(0.98);
-}
-
-/* Download Button */
-.download-btn {
-    position: fixed;
-    bottom: 20px;
     left: 20px;
     z-index: 2000;
     width: 56px;
