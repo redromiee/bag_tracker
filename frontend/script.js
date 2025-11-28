@@ -84,8 +84,8 @@ function updateRecentScansUI() {
 async function deleteScan(index) {
     const scan = recentScans[index];
 
-    // Show confirmation dialog
-    const confirmed = confirm(`Are you sure you want to delete this scan?\n\n${scan.scan_type} | Bin: ${scan.bin_id} | Bag: ${scan.bag_id}\n\nThis action cannot be undone.`);
+    // Show custom confirmation modal
+    const confirmed = await showConfirmModal(`Are you sure you want to delete this scan?\n\n${scan.scan_type} | Bin: ${scan.bin_id} | Bag: ${scan.bag_id}\n\nThis action cannot be undone.`);
 
     if (!confirmed) {
         return; // User clicked "No" or cancelled
@@ -347,3 +347,37 @@ function stopScanner() {
 // Start scanner on load? No, wait for selection.
 // Actually, html5-qrcode needs the element to exist. The element is in #scanning-screen.
 // We should init it when showing scanning screen.
+// Custom confirmation modal
+function showConfirmModal(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const messageEl = document.getElementById('modal-message');
+        const yesBtn = document.getElementById('modal-yes');
+        const noBtn = document.getElementById('modal-no');
+        const overlay = modal.querySelector('.modal-overlay');
+
+        messageEl.textContent = message;
+        modal.classList.remove('hidden');
+
+        const handleYes = () => {
+            cleanup();
+            resolve(true);
+        };
+
+        const handleNo = () => {
+            cleanup();
+            resolve(false);
+        };
+
+        const cleanup = () => {
+            modal.classList.add('hidden');
+            yesBtn.removeEventListener('click', handleYes);
+            noBtn.removeEventListener('click', handleNo);
+            overlay.removeEventListener('click', handleNo);
+        };
+
+        yesBtn.addEventListener('click', handleYes);
+        noBtn.addEventListener('click', handleNo);
+        overlay.addEventListener('click', handleNo);
+    });
+}
