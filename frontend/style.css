@@ -160,6 +160,7 @@ body.dark-mode .split-half.white {
     align-items: center;
     padding: 20px;
     height: 100vh;
+    overflow-y: auto;
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -169,6 +170,46 @@ body.dark-mode .split-half.white {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
+}
+
+#mode-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.back-btn:hover {
+    opacity: 0.7;
+}
+
+.change-bin-btn {
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.change-bin-btn:hover {
+    opacity: 0.8;
+}
+
+.step-indicator {
     margin-bottom: 20px;
 }
 
@@ -252,6 +293,66 @@ button:active {
 
 .hidden {
     display: none !important;
+}
+
+/* Recent Scans */
+.recent-scans {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.recent-scans h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.scan-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--bg-primary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.scan-info {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.scan-type {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.scan-ids {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+.delete-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background-color: #FF3B30;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 0.8;
 }
 
 @keyframes fadeIn {

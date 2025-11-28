@@ -7,6 +7,108 @@ let scanData = {
     scan_type: null
 };
 
+// Recent scans history (max 5)
+let recentScans = [];
+
+// --- Audio & Haptic Feedback ---
+function playSuccessSound() {
+    // Create a simple beep using Web Audio API
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800; // Frequency in Hz
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        console.log('Audio not supported:', e);
+    }
+}
+
+function triggerHapticFeedback() {
+    // Vibrate for 200ms
+    if ('vibrate' in navigator) {
+        navigator.vibrate(200);
+    }
+}
+
+function provideFeedback() {
+    playSuccessSound();
+    triggerHapticFeedback();
+}
+
+// --- Recent Scans Management ---
+function addToRecentScans(scan) {
+    recentScans.unshift(scan); // Add to beginning
+    if (recentScans.length > 5) {
+        recentScans.pop(); // Remove oldest
+    }
+    updateRecentScansUI();
+}
+
+function updateRecentScansUI() {
+    const scansList = document.getElementById('scans-list');
+    const recentScansContainer = document.getElementById('recent-scans');
+
+    if (recentScans.length === 0) {
+        recentScansContainer.classList.add('hidden');
+        return;
+    }
+
+    recentScansContainer.classList.remove('hidden');
+    scansList.innerHTML = '';
+
+    recentScans.forEach((scan, index) => {
+        const scanItem = document.createElement('div');
+        scanItem.className = 'scan-item';
+        scanItem.innerHTML = `
+            <div class="scan-info">
+                <div class="scan-type">${scan.scan_type}</div>
+                <div class="scan-ids">Bin: ${scan.bin_id} | Bag: ${scan.bag_id}</div>
+            </div>
+            <button class="delete-btn" onclick="deleteScan(${index})">Delete</button>
+        `;
+        scansList.appendChild(scanItem);
+    });
+}
+
+async function deleteScan(index) {
+    const scan = recentScans[index];
+
+    try {
+        const response = await fetch('/delete_scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(scan),
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            recentScans.splice(index, 1);
+            updateRecentScansUI();
+            showMessage('Scan deleted successfully', 'success');
+        } else {
+            showMessage('Failed to delete: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting scan:', error);
+        showMessage('Network error while deleting', 'error');
+    }
+}
+
+
 // --- Theme Toggle Logic ---
 function toggleTheme() {
     const body = document.body;
@@ -146,6 +248,16 @@ async function submitData() {
         const result = await response.json();
 
         if (result.status === 'success') {
+            // Provide audio and haptic feedback
+            provideFeedback();
+
+            // Add to recent scans history
+            addToRecentScans({
+                scan_type: scanData.scan_type,
+                bin_id: scanData.bin_id,
+                bag_id: scanData.bag_id
+            });
+
             showMessage(`Saved! ${scanType} | Bin: ${scanData.bin_id} | Bag: ${scanData.bag_id}`, 'success');
 
             // PERSISTENT BIN LOGIC:
