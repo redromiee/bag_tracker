@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import uvicorn
 import os
 import datetime
+from datetime import timedelta
 import pytz
 import json
 import bcrypt
@@ -128,6 +129,137 @@ def verify_token(token: str) -> dict:
         return None
     except jwt.InvalidTokenError:
         return None
+
+# --- Data Retention & Cleanup Functions ---
+
+def cleanup_old_scan_data(dry_run: bool = True) -> dict:
+    """
+    Delete scan data older than 7 days from 'Bag Tracker Data' sheet
+    
+    Args:
+        dry_run: If True, only report what would be deleted without actually deleting
+    
+    Returns:
+        dict with status, count of deletions, and list of deleted records (if dry_run)
+    """
+    try:
+        sheet = get_sheet()
+        all_records = sheet.get_all_records()
+        
+        ist_timezone = pytz.timezone('Asia/Kolkata')
+        now = datetime.datetime.now(ist_timezone)
+        seven_days_ago = now - timedelta(days=7)
+        
+        rows_to_delete = []
+        deleted_records = []
+        
+        for i, record in enumerate(all_records):
+            timestamp_str = record.get('Timestamp', '')
+            if not timestamp_str:
+                continue
+            
+            try:
+                # Parse timestamp (format: "2024-11-29 14:30:45")
+                timestamp = datetime.datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+                timestamp = ist_timezone.localize(timestamp)
+                
+                if timestamp < seven_days_ago:
+                    row_index = i + 2  # +2 because header is row 1, data starts at row 2
+                    rows_to_delete.append(row_index)
+                    deleted_records.append({
+                        'row': row_index,
+                        'timestamp': timestamp_str,
+                        'bin_id': record.get('Bin ID'),
+                        'bag_id': record.get('Bag ID'),
+                        'scan_type': record.get('Scan Type')
+                    })
+            except ValueError:
+                # Skip records with invalid timestamp format
+                continue
+        
+        if not dry_run and rows_to_delete:
+            # Delete rows in reverse order to maintain correct indices
+            for row_index in reversed(rows_to_delete):
+                sheet.delete_rows(row_index)
+        
+        return {
+            "status": "success",
+            "dry_run": dry_run,
+            "deleted_count": len(rows_to_delete),
+            "records": deleted_records if dry_run else []
+        }
+    
+    except Exception as e:
+        print(f"Cleanup scan data error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
+def cleanup_inactive_users(dry_run: bool = True) -> dict:
+    """
+    Delete users who haven't logged in for more than 10 days
+    Only deletes users with a Last Login date (keeps never-logged-in users)
+    
+    Args:
+        dry_run: If True, only report what would be deleted without actually deleting
+    
+    Returns:
+        dict with status, count of deletions, and list of deleted users (if dry_run)
+    """
+    try:
+        users_sheet = get_users_sheet()
+        all_users = users_sheet.get_all_records()
+        
+        ist_timezone = pytz.timezone('Asia/Kolkata')
+        now = datetime.datetime.now(ist_timezone)
+        ten_days_ago = now - timedelta(days=10)
+        
+        rows_to_delete = []
+        deleted_users = []
+        
+        for i, user in enumerate(all_users):
+            last_login_str = user.get('Last Login', '').strip()
+            
+            # Skip users who have never logged in (empty Last Login)
+            if not last_login_str:
+                continue
+            
+            try:
+                # Parse last login (format: "2024-11-29 14:30:45")
+                last_login = datetime.datetime.strptime(last_login_str, "%Y-%m-%d %H:%M:%S")
+                last_login = ist_timezone.localize(last_login)
+                
+                if last_login < ten_days_ago:
+                    row_index = i + 2  # +2 because header is row 1, data starts at row 2
+                    rows_to_delete.append(row_index)
+                    deleted_users.append({
+                        'row': row_index,
+                        'username': user.get('Username'),
+                        'name': user.get('Name'),
+                        'last_login': last_login_str,
+                        'branch': user.get('Branch')
+                    })
+            except ValueError:
+                # Skip users with invalid last login format
+                continue
+        
+        if not dry_run and rows_to_delete:
+            # Delete rows in reverse order to maintain correct indices
+            for row_index in reversed(rows_to_delete):
+                users_sheet.delete_rows(row_index)
+        
+        return {
+            "status": "success",
+            "dry_run": dry_run,
+            "deleted_count": len(rows_to_delete),
+            "users": deleted_users if dry_run else []
+        }
+    
+    except Exception as e:
+        print(f"Cleanup inactive users error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
 
 def require_auth(func):
     """Decorator to require authentication"""
@@ -442,6 +574,51 @@ def download_data(request: DownloadRequest):
         
     except Exception as e:
         print(f"Error generating download: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
+# Data Retention & Cleanup Endpoint
+class CleanupRequest(BaseModel):
+    secret_key: str
+    dry_run: bool = True  # Default to dry-run for safety
+
+@app.post("/cleanup")
+def cleanup_data(request: CleanupRequest):
+    """
+    Cleanup old data (7+ day scans and 10+ day inactive users)
+    Requires secret key for authentication
+    
+    Args:
+        secret_key: Must match CLEANUP_SECRET_KEY environment variable
+        dry_run: If True, only reports what would be deleted without deleting
+    
+    Returns:
+        Summary of cleanup operations
+    """
+    try:
+        # Verify secret key
+        expected_key = os.getenv("CLEANUP_SECRET_KEY", "change-this-secret-key")
+        if request.secret_key != expected_key:
+            return {"status": "error", "message": "Invalid secret key"}
+        
+        # Run cleanup functions
+        scan_result = cleanup_old_scan_data(dry_run=request.dry_run)
+        user_result = cleanup_inactive_users(dry_run=request.dry_run)
+        
+        return {
+            "status": "success",
+            "dry_run": request.dry_run,
+            "scan_data_cleanup": scan_result,
+            "inactive_users_cleanup": user_result,
+            "summary": {
+                "scans_deleted": scan_result.get("deleted_count", 0),
+                "users_deleted": user_result.get("deleted_count", 0)
+            }
+        }
+    
+    except Exception as e:
+        print(f"Cleanup endpoint error: {e}")
         import traceback
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
