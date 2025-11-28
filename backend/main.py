@@ -244,12 +244,15 @@ def verify_user_token(token_data: TokenData):
 @app.post("/record_scan")
 def record_scan(data: ScanData):
     ist_timezone = pytz.timezone('Asia/Kolkata')
-    timestamp = datetime.datetime.now(ist_timezone).strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.datetime.now(ist_timezone)
+    date = now.strftime("%Y-%m-%d")  # Date only
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")  # Full timestamp
     print(f"[{timestamp}] Received scan: Type={data.scan_type}, Bin={data.bin_id}, Bag={data.bag_id}")
     
     try:
         sheet = get_sheet()
-        sheet.append_row([timestamp, data.scan_type, data.bin_id, data.bag_id, "Scanned"])
+        # Column order: Date, Timestamp, Type, Bin Name, Bag ID (removed Status)
+        sheet.append_row([date, timestamp, data.scan_type, data.bin_id, data.bag_id])
         return {"status": "success", "data": data}
     except Exception as e:
         print(f"Error saving to sheet: {e}")
