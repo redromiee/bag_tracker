@@ -1,89 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 
-font-size: 1rem;
-border: 2px solid var(--border);
-border-radius: 10px;
-background: var(--bg-primary);
-color: var(--text-primary);
-transition: border-color 0.2s;
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Bag Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: var(--bg-primary);
+            overflow-y: auto;
+        }
 
-.form-group input:focus {
-outline: none;
-border-color: var(--accent);
-}
+        .auth-box {
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+        }
 
-.form-group small {
-display: block;
-margin-top: 5px;
-color: var(--text-secondary);
-font-size: 0.85rem;
-}
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
 
-.auth-btn {
-width: 100%;
-padding: 15px;
-font-size: 1.1rem;
-font-weight: 700;
-background: var(--accent);
-color: white;
-border: none;
-border-radius: 10px;
-cursor: pointer;
-transition: opacity 0.2s;
-}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-.auth-btn:hover {
-opacity: 0.9;
-}
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
 
-.auth-btn:disabled {
-opacity: 0.5;
-cursor: not-allowed;
-}
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
 
-.toggle-form {
-text-align: center;
-margin-top: 20px;
-color: var(--text-secondary);
-}
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
 
-.toggle-form a {
-color: var(--accent);
-text-decoration: none;
-font-weight: 600;
-cursor: pointer;
-}
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
 
-.toggle-form a:hover {
-text-decoration: underline;
-}
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
 
-.error-message {
-background: #FF3B30;
-color: white;
-padding: 12px;
-border-radius: 8px;
-margin-bottom: 20px;
-text-align: center;
-font-weight: 600;
-}
+        .auth-btn:hover {
+            opacity: 0.9;
+        }
 
-.success-message {
-background: #34C759;
-color: white;
-padding: 12px;
-border-radius: 8px;
-margin-bottom: 20px;
-text-align: center;
-font-weight: 600;
-}
+        .auth-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-.hidden {
-display: none !important;
-}
-</style>
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-secondary);
+        }
+
+        .toggle-form a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #FF3B30;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success-message {
+            background: #34C759;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -162,7 +213,6 @@ display: none !important;
         // Check if already logged in
         const token = localStorage.getItem('authToken');
         if (token) {
-            // Verify token
             fetch('/verify_token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
