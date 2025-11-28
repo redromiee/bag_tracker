@@ -10,6 +10,11 @@ let scanData = {
 // Recent scans history (max 5)
 let recentScans = [];
 
+// Scan queue for rapid consecutive scanning
+let scanQueue = [];
+let isProcessingQueue = false;
+let queuedScansCount = 0;
+
 // --- Audio & Haptic Feedback ---
 function playSuccessSound() {
     // Create a simple beep using Web Audio API
@@ -306,52 +311,88 @@ function showMessage(msg, type) {
 }
 
 async function submitData() {
-    showMessage('Submitting...', 'success');
+    // Add to queue instead of submitting directly
+    const scanToQueue = {
+        bin_id: scanData.bin_id,
+        bag_id: scanData.bag_id,
+        scan_type: scanType,
+        timestamp: new Date().toISOString()
+    };
 
-    scanData.scan_type = scanType;
+    scanQueue.push(scanToQueue);
+    queuedScansCount++;
 
-    try {
-        const response = await fetch('/record_scan', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(scanData),
-        });
+    // Immediate feedback (optimistic UI)
+    provideFeedback();
 
-        const result = await response.json();
+    // Add to recent scans immediately
+    addToRecentScans({
+        scan_type: scanType,
+        bin_id: scanData.bin_id,
+        bag_id: scanData.bag_id
+    });
 
-        if (result.status === 'success') {
-            // Provide audio and haptic feedback
-            provideFeedback();
+    // Show success message immediately
+    const queueInfo = scanQueue.length > 1 ? ` (${scanQueue.length} in queue)` : '';
+    showMessage(`✓ Bag ${scanData.bag_id} queued${queueInfo}`, 'success');
 
-            // Add to recent scans history
-            addToRecentScans({
-                scan_type: scanData.scan_type,
-                bin_id: scanData.bin_id,
-                bag_id: scanData.bag_id
+    // PERSISTENT BIN LOGIC:
+    // Stay on 'BAG' step, keep bin_id, clear bag_id
+    currentStep = 'BAG';
+    scanData.bag_id = null;
+    updateInstruction();
+
+    // Auto-hide success message after 2s (faster for rapid scanning)
+    setTimeout(() => {
+        document.getElementById('status-area').classList.add('hidden');
+    }, 2000);
+
+    // Process queue in background
+    processQueue();
+}
+
+// Process scan queue in background
+async function processQueue() {
+    if (isProcessingQueue || scanQueue.length === 0) return;
+
+    isProcessingQueue = true;
+
+    while (scanQueue.length > 0) {
+        const scan = scanQueue[0]; // Peek at first item
+
+        try {
+            const response = await fetch('/record_scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(scan),
             });
 
-            showMessage(`Saved! ${scanType} | Bin: ${scanData.bin_id} | Bag: ${scanData.bag_id}`, 'success');
+            const result = await response.json();
 
-            // PERSISTENT BIN LOGIC:
-            // Stay on 'BAG' step, keep bin_id, clear bag_id
-            currentStep = 'BAG';
-            // scanData.bin_id remains same
-            scanData.bag_id = null;
-            updateInstruction();
-
-            // Optional: Auto-hide success message after 3s
-            setTimeout(() => {
-                document.getElementById('status-area').classList.add('hidden');
-            }, 3000);
-
-        } else {
-            showMessage('Error saving data.', 'error');
+            if (result.status === 'success') {
+                // Remove from queue after successful save
+                scanQueue.shift();
+                console.log(`✓ Saved: Bin ${scan.bin_id} | Bag ${scan.bag_id}`);
+            } else {
+                // Keep in queue and retry after delay
+                console.error('Save failed, will retry:', result.message);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+        } catch (error) {
+            // Network error - keep in queue and retry
+            console.error('Network error, will retry:', error);
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
-    } catch (error) {
-        console.error('Error:', error);
-        showMessage('Network error.', 'error');
+    }
+
+    isProcessingQueue = false;
+
+    // Show completion message if all queued scans are processed
+    if (queuedScansCount > 0) {
+        console.log(`✓ All ${queuedScansCount} scans saved to server`);
+        queuedScansCount = 0;
     }
 }
 
@@ -360,7 +401,11 @@ function startScanner() {
     if (!html5QrcodeScanner) {
         html5QrcodeScanner = new Html5QrcodeScanner(
             "reader",
-            { fps: 10, qrbox: { width: 250, height: 250 } },
+            {
+                fps: 30,  // Increased from 10 to 30 for faster detection
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0  // Optimize for square QR codes
+            },
             /* verbose= */ false);
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     }
