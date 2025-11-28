@@ -25,16 +25,6 @@
                     if (data.status !== 'success') {
                         localStorage.removeItem('authToken');
                         window.location.href = '/login';
-                    } else {
-                        // Display user info
-                        const userName = localStorage.getItem('userName') || data.user.name;
-                        const userBranch = localStorage.getItem('userBranch') || data.user.branch;
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const userInfo = document.getElementById('user-info');
-                            if (userInfo) {
-                                userInfo.textContent = `${userName} | ${userBranch}`;
-                            }
-                        });
                     }
                 });
         }
@@ -63,6 +53,43 @@
     <div id="selection-screen">
         <div class="split-half black" onclick="selectType('FWD')">
             <span>FWD</span>
+        </div>
+        <div class="split-half white" onclick="selectType('RTO')">
+            <span>RTO</span>
+        </div>
+    </div>
+
+    <!-- Scanning Screen -->
+    <div id="scanning-screen" class="hidden">
+        <div class="header">
+            <button class="back-btn" onclick="resetToSelection()">← Back</button>
+            <div style="text-align: center; flex: 1;">
+                <h1 id="mode-title">FWD</h1>
+            </div>
+            <button id="change-bin-btn" class="change-bin-btn hidden" onclick="changeBin()">Change Bin</button>
+
+            <!-- Profile Menu -->
+            <div class="profile-menu">
+                <div class="profile-icon" onclick="toggleProfileMenu()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                    </svg>
+                </div>
+                <div id="profile-dropdown" class="profile-dropdown hidden">
+                    <div class="profile-info">
+                        <div class="profile-name" id="dropdown-user-name"></div>
+                        <div class="profile-branch" id="dropdown-user-branch"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="status-area" class="status hidden"></div>
+
+        <div class="step-indicator">
+            <h2 id="current-instruction">Scan Bin QR</h2>
         </div>
 
         <div id="reader"></div>
