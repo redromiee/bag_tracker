@@ -65,26 +65,45 @@ def delete_scan(data: ScanData):
         sheet = get_sheet()
         records = sheet.get_all_records()
         
+        # Debug: print first record to see column names
+        if records:
+            print(f"Available columns: {list(records[0].keys())}")
+            print(f"First record: {records[0]}")
+        
         # Find matching row (search backwards for most recent)
         row_to_delete = None
         for i in range(len(records) - 1, -1, -1):
             record = records[i]
-            if (str(record.get('Bin ID')) == str(data.bin_id) and 
-                str(record.get('Bag ID')) == str(data.bag_id) and 
-                str(record.get('Type')) == str(data.scan_type)):
+            
+            # Use exact column names from your sheet: 'Bin Name', 'Bag ID', 'Type'
+            bin_name_value = str(record.get('Bin Name', ''))
+            bag_id_value = str(record.get('Bag ID', ''))
+            type_value = str(record.get('Type', ''))
+            
+            print(f"Checking row {i+2}: Bin={bin_name_value}, Bag={bag_id_value}, Type={type_value}")
+            
+            if (bin_name_value == str(data.bin_id) and 
+                bag_id_value == str(data.bag_id) and 
+                type_value == str(data.scan_type)):
                 row_to_delete = i + 2  # +2 because header is row 1, first data is row 2
+                print(f"Match found at row {row_to_delete}")
                 break
         
         if row_to_delete:
             sheet.delete_rows(row_to_delete)
-            print(f"Deleted row {row_to_delete}")
+            print(f"Successfully deleted row {row_to_delete}")
             return {"status": "success", "message": "Scan deleted"}
         else:
+            print(f"No matching record found for Bin={data.bin_id}, Bag={data.bag_id}, Type={data.scan_type}")
             return {"status": "error", "message": "Record not found"}
     
     except Exception as e:
         print(f"Error deleting from sheet: {e}")
+        import traceback
+        traceback.print_exc()
         return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
