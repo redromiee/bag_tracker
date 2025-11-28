@@ -381,3 +381,100 @@ function showConfirmModal(message) {
         overlay.addEventListener('click', handleNo);
     });
 }
+
+// Download Modal Functions
+function showDownloadModal() {
+    const modal = document.getElementById('download-modal');
+    const today = new Date().toISOString().split('T')[0];
+
+    // Set default dates to today
+    document.getElementById('start-date').value = today;
+    document.getElementById('end-date').value = today;
+
+    modal.classList.remove('hidden');
+}
+
+function closeDownloadModal() {
+    const modal = document.getElementById('download-modal');
+    modal.classList.add('hidden');
+}
+
+async function handleDownload() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const branch = localStorage.getItem('userBranch') || 'Unknown';
+
+    // Validate dates
+    if (!startDate || !endDate) {
+        showMessage('Please select both start and end dates', 'error');
+        return;
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Check if start date is before end date
+    if (start > end) {
+        showMessage('Start date must be before or equal to end date', 'error');
+        return;
+    }
+
+    // Check 7-day limit
+    const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    if (daysDiff > 7) {
+        showMessage('Date range cannot exceed 7 days', 'error');
+        return;
+    }
+
+    try {
+        showMessage('Preparing download...', 'success');
+
+        const response = await fetch('/download_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                start_date: startDate,
+                end_date: endDate,
+                branch: branch
+            }),
+        });
+
+        // Check if response is JSON (error) or file (success)
+        const contentType = response.headers.get('content-type');
+
+        if (contentType && contentType.includes('application/json')) {
+            // Error response
+            const result = await response.json();
+            showMessage(result.message || 'Download failed', 'error');
+            return;
+        }
+
+        // Success - download file
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        // Extract filename from Content-Disposition header
+        const disposition = response.headers.get('Content-Disposition');
+        let filename = 'scan_data.xlsx';
+        if (disposition && disposition.includes('filename=')) {
+            filename = disposition.split('filename=')[1].replace(/"/g, '');
+        }
+
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        showMessage('Download complete!', 'success');
+        closeDownloadModal();
+
+    } catch (error) {
+        console.error('Download error:', error);
+        showMessage('Network error while downloading', 'error');
+    }
+}

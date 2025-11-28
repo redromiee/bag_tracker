@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import uvicorn
 import os
@@ -13,6 +13,8 @@ from functools import wraps
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from openpyxl import Workbook
+from io import BytesIO
 
 app = FastAPI()
 
@@ -44,6 +46,11 @@ class UserLogin(BaseModel):
 
 class TokenData(BaseModel):
     token: str
+
+class DownloadRequest(BaseModel):
+    start_date: str  # Format: YYYY-MM-DD
+    end_date: str    # Format: YYYY-MM-DD
+    branch: str
 
 @app.get("/")
 async def read_index():
@@ -308,3 +315,81 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
+
+@app.post("/download_data")
+def download_data(request: DownloadRequest):
+    """Download scan data for a date range as Excel file"""
+    try:
+        # Parse dates
+        start_date = datetime.datetime.strptime(request.start_date, "%Y-%m-%d").date()
+        end_date = datetime.datetime.strptime(request.end_date, "%Y-%m-%d").date()
+        
+        # Validate date range (max 7 days)
+        date_diff = (end_date - start_date).days
+        if date_diff < 0:
+            return {"status": "error", "message": "Start date must be before or equal to end date"}
+        if date_diff > 7:
+            return {"status": "error", "message": "Date range cannot exceed 7 days"}
+        
+        # Fetch all records from Google Sheet
+        sheet = get_sheet()
+        all_records = sheet.get_all_records()
+        
+        # Filter by date range
+        filtered_records = []
+        for record in all_records:
+            try:
+                # Assuming Date column exists (format: YYYY-MM-DD)
+                record_date_str = str(record.get('Date', ''))
+                if not record_date_str:
+                    continue
+                    
+                record_date = datetime.datetime.strptime(record_date_str, "%Y-%m-%d").date()
+                
+                if start_date <= record_date <= end_date:
+                    filtered_records.append(record)
+            except (ValueError, KeyError):
+                # Skip records with invalid dates
+                continue
+        
+        # Check if any data found
+        if not filtered_records:
+            return {"status": "error", "message": "No data found in the mentioned date range"}
+        
+        # Create Excel file
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Scan Data"
+        
+        # Write headers
+        if filtered_records:
+            headers = list(filtered_records[0].keys())
+            ws.append(headers)
+            
+            # Write data rows
+            for record in filtered_records:
+                row = [record.get(header, '') for header in headers]
+                ws.append(row)
+        
+        # Format filename: DD-MM-YYYY-DD-MM-YYYY_BranchName.xlsx
+        start_formatted = start_date.strftime("%d-%m-%Y")
+        end_formatted = end_date.strftime("%d-%m-%Y")
+        filename = f"{start_formatted}-{end_formatted}_{request.branch}.xlsx"
+        
+        # Save to BytesIO
+        excel_file = BytesIO()
+        wb.save(excel_file)
+        excel_file.seek(0)
+        
+        # Return file as download
+        return StreamingResponse(
+            excel_file,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+        
+    except Exception as e:
+        print(f"Error generating download: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}

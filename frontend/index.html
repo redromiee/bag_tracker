@@ -123,4 +123,34 @@
     <script src="/static/script.js"></script>
 </body>
 
-</html>
+</html><!-- Download Button -->
+<div class="download-btn" onclick="showDownloadModal()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+</div>
+
+<!-- Download Modal -->
+<div id="download-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <h3 class="modal-title">Download Scan Data</h3>
+        <div class="date-inputs">
+            <div class="date-input-group">
+                <label for="start-date">From Date</label>
+                <input type="date" id="start-date" class="date-input">
+            </div>
+            <div class="date-input-group">
+                <label for="end-date">To Date</label>
+                <input type="date" id="end-date" class="date-input">
+            </div>
+        </div>
+        <p class="date-range-hint">Maximum 7-day range allowed</p>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeDownloadModal()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" onclick="handleDownload()">Download</button>
+        </div>
+    </div>
+</div>
