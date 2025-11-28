@@ -169,7 +169,7 @@ def register(user: UserRegister):
         ist_timezone = pytz.timezone('Asia/Kolkata')
         created_at = datetime.datetime.now(ist_timezone).strftime("%Y-%m-%d %H:%M:%S")
         
-        # Add user to sheet
+        # Add user to sheet (with empty Approval status - admin needs to approve)
         users_sheet.append_row([
             user.username,
             password_hash,
@@ -178,7 +178,8 @@ def register(user: UserRegister):
             user.email,
             user.branch,
             created_at,
-            ""  # Last login (empty for now)
+            "",  # Last login (empty for now)
+            ""   # Approval status (empty - needs admin approval)
         ])
         
         return {"status": "success", "message": "Registration successful"}
@@ -211,6 +212,15 @@ def login(credentials: UserLogin):
         # Verify password
         if not verify_password(credentials.password, user_row.get('Password Hash', '')):
             return {"status": "error", "message": "Invalid username or password"}
+        
+        # Check approval status
+        approval_status = user_row.get('Approval', '').strip()
+        if approval_status != 'Approved':
+            return {
+                "status": "error",
+                "message": "Admin approval needed. Please contact administrator.",
+                "error_code": "APPROVAL_REQUIRED"
+            }
         
         # Update last login
         ist_timezone = pytz.timezone('Asia/Kolkata')
@@ -250,6 +260,49 @@ def verify_user_token(token_data: TokenData):
         return {"status": "success", "user": payload}
     else:
         return {"status": "error", "message": "Invalid or expired token"}
+
+@app.post("/check_approval")
+def check_approval(token_data: TokenData):
+    """Check if user's approval status is still valid"""
+    try:
+        # Verify token first
+        payload = verify_token(token_data.token)
+        if not payload:
+            return {"status": "error", "message": "Invalid or expired token", "approved": False}
+        
+        username = payload.get('username')
+        if not username:
+            return {"status": "error", "message": "Invalid token payload", "approved": False}
+        
+        # Get user from sheet
+        users_sheet = get_users_sheet()
+        users = users_sheet.get_all_records()
+        
+        # Find user
+        user_row = None
+        for user in users:
+            if user.get('Username') == username:
+                user_row = user
+                break
+        
+        if not user_row:
+            return {"status": "error", "message": "User not found", "approved": False}
+        
+        # Check approval status
+        approval_status = user_row.get('Approval', '').strip()
+        is_approved = approval_status == 'Approved'
+        
+        return {
+            "status": "success",
+            "approved": is_approved,
+            "approval_status": approval_status if approval_status else "Pending"
+        }
+    
+    except Exception as e:
+        print(f"Check approval error: {e}\"")
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e), "approved": False}
 
 
 @app.post("/record_scan")
