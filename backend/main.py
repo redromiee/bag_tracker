@@ -56,6 +56,10 @@ class DownloadRequest(BaseModel):
 async def read_index():
     return FileResponse(os.path.join(FRONTEND_PATH, "index.html"))
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "Server is running"}
+
 @app.get("/login")
 async def read_login():
     return FileResponse(os.path.join(FRONTEND_PATH, "login.html"))
