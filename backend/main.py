@@ -28,9 +28,16 @@ class ScanData(BaseModel):
 async def read_index():
     return FileResponse(os.path.join(FRONTEND_PATH, "index.html"))
 
+import datetime
+import pytz
+
+# ... existing imports ...
+
 @app.post("/record_scan")
 def record_scan(data: ScanData):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Set timezone to Asia/Kolkata (IST)
+    ist_timezone = pytz.timezone('Asia/Kolkata')
+    timestamp = datetime.datetime.now(ist_timezone).strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] Received scan: Type={data.scan_type}, Bin={data.bin_id}, Bag={data.bag_id}")
     
     try:
