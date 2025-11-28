@@ -570,7 +570,9 @@ body.dark-mode .toggle-track {
 
 body.dark-mode .toggle-thumb {
     transform: translateX(24px);
-}/* Custom Confirmation Modal */
+}
+
+/* Custom Confirmation Modal */
 .modal {
     position: fixed;
     top: 0;
@@ -650,6 +652,10 @@ body.dark-mode .toggle-thumb {
 
 .modal-btn-cancel {
     background: var(--bg-tertiary);
+    color: white;
+}
+
+body.dark-mode .modal-btn-cancel {
     color: var(--text-primary);
 }
 
@@ -670,6 +676,7 @@ body.dark-mode .toggle-thumb {
 .modal-btn:active {
     transform: scale(0.98);
 }
+
 .change-bin-btn-full {
     width: 100%;
     max-width: 500px;
@@ -692,6 +699,7 @@ body.dark-mode .toggle-thumb {
 .change-bin-btn-full:active {
     transform: scale(0.98);
 }
+
 /* Download Button */
 .download-btn {
     position: fixed;
