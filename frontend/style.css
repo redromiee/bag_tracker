@@ -260,29 +260,6 @@ body.dark-mode .split-half.white {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    height: 100vh;
-    overflow-y: auto;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.header {
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-#mode-title {
-    font-size: 2rem;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.back-btn {
-    background: none;
-    border: none;
     font-size: 1rem;
     font-weight: 600;
     color: var(--accent);
@@ -540,6 +517,7 @@ button:active {
         transform: translateY(0);
     }
 }
+
 /* Theme Toggle Button */
 .theme-toggle {
     position: fixed;

@@ -205,6 +205,16 @@ function handleInput(text) {
     statusArea.classList.add('hidden');
 
     if (currentStep === 'BIN') {
+        // Validation: Check Bin ID length
+        if (scanType === 'FWD' && text.length > 3) {
+            showMessage('Error: FWD Bin ID cannot exceed 3 characters', 'error');
+            return;
+        }
+        if (scanType === 'RTO' && text.length > 4) {
+            showMessage('Error: RTO Bin ID cannot exceed 4 characters', 'error');
+            return;
+        }
+
         scanData.bin_id = text;
         currentStep = 'BAG';
         updateInstruction();
