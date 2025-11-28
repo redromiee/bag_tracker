@@ -1,10 +1,33 @@
 :root {
+    /* Light mode colors (default) */
+    --bg-primary: #f5f5f7;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #000000;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-inverse: #ffffff;
+    --accent: #007AFF;
+    --border: #d2d2d7;
+    --shadow: rgba(0, 0, 0, 0.1);
+
+    /* Legacy variables for compatibility */
     --black: #000000;
     --white: #ffffff;
-    --accent: #007AFF;
-    /* Apple Blue */
     --gray: #f5f5f7;
     --text-dark: #1d1d1f;
+}
+
+/* Dark mode colors */
+body.dark-mode {
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #ffffff;
+    --text-primary: #f5f5f7;
+    --text-secondary: #98989d;
+    --text-inverse: #000000;
+    --accent: #0a84ff;
+    --border: #38383a;
+    --shadow: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -15,11 +38,74 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--gray);
-    color: var(--text-dark);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     height: 100vh;
     overflow: hidden;
-    /* Prevent scrolling on selection screen */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px var(--shadow);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.toggle-track {
+    width: 50px;
+    height: 26px;
+    background: var(--border);
+    border-radius: 50px;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+body.dark-mode .toggle-track {
+    background: var(--accent);
+}
+
+body.dark-mode .toggle-thumb {
+    transform: translateX(24px);
+}
+
+.toggle-icon {
+    font-size: 14px;
 }
 
 /* Selection Screen */
@@ -54,7 +140,12 @@ body {
     background-color: var(--white);
     color: var(--black);
     border-top: 2px solid var(--black);
-    /* Visual separator */
+}
+
+body.dark-mode .split-half.white {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-top: 2px solid var(--border);
 }
 
 .split-half:active {
@@ -94,6 +185,11 @@ body {
     font-weight: 600;
     color: var(--accent);
     cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.back-btn:hover {
+    opacity: 0.7;
 }
 
 .step-indicator {
@@ -110,7 +206,7 @@ body {
     max-width: 500px;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow);
     background: #000;
 }
 
@@ -126,10 +222,12 @@ input[type="text"] {
     flex: 1;
     padding: 15px;
     font-size: 1.2rem;
-    border: 2px solid #ddd;
+    border: 2px solid var(--border);
     border-radius: 12px;
     outline: none;
-    transition: border-color 0.2s;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: border-color 0.2s, background 0.3s, color 0.3s;
 }
 
 input[type="text"]:focus {
@@ -140,11 +238,16 @@ button {
     padding: 15px 25px;
     font-size: 1.2rem;
     font-weight: 600;
-    background-color: var(--black);
-    color: var(--white);
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
     border: none;
     border-radius: 12px;
     cursor: pointer;
+    transition: transform 0.1s, background 0.3s, color 0.3s;
+}
+
+button:hover {
+    opacity: 0.9;
 }
 
 button:active {

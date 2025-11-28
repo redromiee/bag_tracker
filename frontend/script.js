@@ -7,6 +7,42 @@ let scanData = {
     scan_type: null
 };
 
+// --- Theme Toggle Logic ---
+function toggleTheme() {
+    const body = document.body;
+    const isDark = body.classList.toggle('dark-mode');
+
+    // Save preference to localStorage
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+    // Update toggle icon
+    updateThemeIcon(isDark);
+}
+
+function updateThemeIcon(isDark) {
+    const icon = document.querySelector('.toggle-icon');
+    icon.textContent = isDark ? '🌙' : '☀️';
+}
+
+// Load saved theme on page load
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Use saved theme, or fall back to system preference
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+    }
+
+    updateThemeIcon(isDark);
+}
+
+// Initialize theme on load
+loadTheme();
+
+
 // --- Selection Screen Logic ---
 function selectType(type) {
     scanType = type;
