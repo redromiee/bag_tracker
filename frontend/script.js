@@ -84,6 +84,13 @@ function updateRecentScansUI() {
 async function deleteScan(index) {
     const scan = recentScans[index];
 
+    // Show confirmation dialog
+    const confirmed = confirm(`Are you sure you want to delete this scan?\n\n${scan.scan_type} | Bin: ${scan.bin_id} | Bag: ${scan.bag_id}\n\nThis action cannot be undone.`);
+
+    if (!confirmed) {
+        return; // User clicked "No" or cancelled
+    }
+
     try {
         const response = await fetch('/delete_scan', {
             method: 'POST',
