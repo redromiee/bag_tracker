@@ -598,7 +598,7 @@ def cleanup_data(request: CleanupRequest):
     """
     try:
         # Verify secret key
-        expected_key = os.getenv("CLEANUP_SECRET_KEY", "change-this-secret-key")
+        expected_key = os.getenv("CLEANUP_SECRET_KEY", "bagtracker2024")
         if request.secret_key != expected_key:
             return {"status": "error", "message": "Invalid secret key"}
         
