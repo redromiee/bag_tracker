@@ -670,3 +670,25 @@ body.dark-mode .toggle-thumb {
 .modal-btn:active {
     transform: scale(0.98);
 }
+.change-bin-btn-full {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 10px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
+    border: none;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.change-bin-btn-full:hover {
+    opacity: 0.8;
+}
+
+.change-bin-btn-full:active {
+    transform: scale(0.98);
+}
