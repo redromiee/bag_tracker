@@ -282,8 +282,9 @@ def register(user: UserRegister):
         for existing_user in users:
             if existing_user.get('Username') == user.username:
                 return {"status": "error", "message": "Username already exists"}
-            
-            # Check if mobile number already exists (one mobile = one account)
+        
+        # Check if mobile number already exists (one mobile = one account)
+        for existing_user in users:
             if existing_user.get('Mobile') == user.mobile:
                 return {"status": "error", "message": "Mobile number already registered"}
         
