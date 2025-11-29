@@ -83,7 +83,8 @@ body.dark-mode .split-half.white {
     align-items: center;
     padding: 20px;
     height: 100vh;
-    overflow-y: auto;
+    overflow: hidden;
+    /* Changed from overflow-y: auto */
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -98,10 +99,14 @@ body.dark-mode .split-half.white {
     font-weight: 600;
     cursor: pointer;
     transition: opacity 0.2s;
+    flex-shrink: 0;
+    /* Prevent header from shrinking */
 }
 
 .step-indicator {
     margin-bottom: 20px;
+    flex-shrink: 0;
+    /* Prevent from shrinking */
 }
 
 #current-instruction {
@@ -116,6 +121,8 @@ body.dark-mode .split-half.white {
     overflow: hidden;
     box-shadow: 0 10px 30px var(--shadow);
     background: #000;
+    flex-shrink: 0;
+    /* Prevent camera from shrinking */
 }
 
 #manual-entry {
@@ -124,6 +131,8 @@ body.dark-mode .split-half.white {
     max-width: 500px;
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
+    /* Prevent input from shrinking */
 }
 
 /* --- Recent Scans --- */
@@ -135,6 +144,12 @@ body.dark-mode .split-half.white {
     background: var(--bg-secondary);
     border-radius: 16px;
     border: 1px solid var(--border);
+    overflow-y: auto;
+    /* Make only this section scrollable */
+    max-height: 300px;
+    /* Limit height so it doesn't push other elements */
+    flex-shrink: 0;
+    /* Prevent from shrinking */
 }
 
 .recent-scans h3 {
