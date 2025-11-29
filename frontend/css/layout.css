@@ -78,35 +78,46 @@ body.dark-mode .split-half.white {
 
 /* --- Scanning Screen --- */
 #scanning-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    grid-template-areas:
+        "header"
+        "status"
+        "instruction"
+        "scanner"
+        "recents";
+    align-items: start;
     padding: 20px;
     height: 100vh;
     overflow: hidden;
-    /* Changed from overflow-y: auto */
     animation: fadeIn 0.3s ease-in-out;
+    gap: 15px;
 }
 
 .header {
+    grid-area: header;
     width: 100%;
     max-width: 500px;
+    justify-self: center;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: opacity 0.2s;
-    flex-shrink: 0;
-    /* Prevent header from shrinking */
+}
+
+#status-area {
+    grid-area: status;
+    width: 100%;
+    max-width: 500px;
+    justify-self: center;
 }
 
 .step-indicator {
-    margin-bottom: 20px;
-    flex-shrink: 0;
-    /* Prevent from shrinking */
+    grid-area: instruction;
+    justify-self: center;
 }
 
 #current-instruction {
@@ -114,42 +125,47 @@ body.dark-mode .split-half.white {
     font-weight: 600;
 }
 
-#reader {
+/* Scanner area - contains reader, manual entry, and change bin button */
+#scanning-screen>#reader,
+#scanning-screen>#manual-entry,
+#scanning-screen>#change-bin-btn {
+    grid-area: scanner;
     width: 100%;
     max-width: 500px;
+    justify-self: center;
+}
+
+#reader {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 10px 30px var(--shadow);
     background: #000;
-    flex-shrink: 0;
-    /* Prevent camera from shrinking */
+    min-height: 250px;
 }
 
 #manual-entry {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 500px;
+    margin-top: 15px;
     display: flex;
     gap: 10px;
-    flex-shrink: 0;
-    /* Prevent input from shrinking */
+}
+
+#change-bin-btn {
+    margin-top: 15px;
 }
 
 /* --- Recent Scans --- */
 .recent-scans {
+    grid-area: recents;
     width: 100%;
     max-width: 500px;
-    margin-top: 30px;
+    justify-self: center;
     padding: 20px;
     background: var(--bg-secondary);
     border-radius: 16px;
     border: 1px solid var(--border);
     overflow-y: auto;
-    /* Make only this section scrollable */
-    max-height: 300px;
-    /* Limit height so it doesn't push other elements */
-    flex-shrink: 0;
-    /* Prevent from shrinking */
+    max-height: 250px;
+    min-height: 100px;
 }
 
 .recent-scans h3 {
