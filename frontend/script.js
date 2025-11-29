@@ -83,6 +83,136 @@ function updateRecentScansUI() {
                 <div class="scan-type">${scan.scan_type}</div>
                 <div class="scan-ids">Bin: ${scan.bin_id} | Bag: ${scan.bag_id}</div>
             </div>
+            <button class="delete-btn" onclick="deleteScan(${index})">Delete</button>
+        `;
+        scansList.appendChild(scanItem);
+    });
+}
+
+async function deleteScan(index) {
+    const scan = recentScans[index];
+
+    // Show custom confirmation modal
+    const confirmed = await showConfirmModal(`Are you sure you want to delete this scan?\n\n${scan.scan_type} | Bin: ${scan.bin_id} | Bag: ${scan.bag_id}\n\nThis action cannot be undone.`);
+
+    if (!confirmed) {
+        return; // User clicked "No" or cancelled
+    }
+
+    try {
+        const response = await fetch('/delete_scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(scan),
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            recentScans.splice(index, 1);
+            updateRecentScansUI();
+            showMessage('Scan deleted successfully', 'success');
+        } else {
+            showMessage('Failed to delete: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting scan:', error);
+        showMessage('Network error while deleting', 'error');
+    }
+}
+
+
+// --- Theme Toggle Logic ---
+function toggleTheme() {
+    const body = document.body;
+    const isDark = body.classList.toggle('dark-mode');
+
+    // Save preference to localStorage
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+    // Update toggle icon
+    updateThemeIcon(isDark);
+}
+
+function updateThemeIcon(isDark) {
+    const icon = document.querySelector('.toggle-icon');
+    icon.textContent = isDark ? '🌙' : '☀️';
+}
+
+// Load saved theme on page load
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Use saved theme, or fall back to system preference
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+    }
+
+    updateThemeIcon(isDark);
+}
+
+// Initialize theme on load
+loadTheme();
+
+// --- Periodic Approval Check ---
+// Check approval status every 5 minutes to auto-logout revoked users
+function checkApprovalStatus() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+
+    fetch('/check_approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' && !data.approved) {
+                // User's approval has been revoked
+                alert('⚠️ Your access has been revoked by the administrator. You will be logged out now.');
+                localStorage.clear();
+                window.location.href = '/login';
+            }
+        })
+        .catch(error => {
+            console.error('Approval check failed:', error);
+        });
+}
+
+// Check approval status every 5 minutes
+setInterval(checkApprovalStatus, 5 * 60 * 1000);
+
+// Also check on page load
+checkApprovalStatus();
+
+
+// --- Profile Menu Logic ---
+function toggleProfileMenu() {
+    const dropdown = document.getElementById('profile-dropdown');
+    dropdown.classList.toggle('hidden');
+
+    // Populate user info if not already done
+    const userName = localStorage.getItem('userName');
+    const userBranch = localStorage.getItem('userBranch');
+
+    if (userName && userBranch) {
+        document.getElementById('dropdown-user-name').textContent = userName;
+        document.getElementById('dropdown-user-branch').textContent = userBranch;
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const profileMenu = document.querySelector('.profile-menu');
+    const dropdown = document.getElementById('profile-dropdown');
+
+    if (profileMenu && !profileMenu.contains(e.target)) {
+        dropdown?.classList.add('hidden');
     }
 });
 
@@ -110,12 +240,12 @@ function resetToSelection() {
 // --- Scanning Logic ---
 // [SECTION: SCANNER]
 function onScanSuccess(decodedText, decodedResult) {
-    console.log(`Code matched = ${ decodedText } `, decodedResult);
+    console.log(`Code matched = ${decodedText}`, decodedResult);
     handleInput(decodedText);
 }
 
 function onScanFailure(error) {
-    // console.warn(`Code scan error = ${ error } `);
+    // console.warn(`Code scan error = ${error}`);
 }
 
 function handleInput(text) {
@@ -136,7 +266,7 @@ function handleInput(text) {
         scanData.bin_id = text;
         currentStep = 'BAG';
         updateInstruction();
-        showMessage(`Bin ${ text } scanned.Now scan Bag.`, 'success');
+        showMessage(`Bin ${text} scanned. Now scan Bag.`, 'success');
         document.getElementById('change-bin-btn').classList.remove('hidden');
     } else if (currentStep === 'BAG') {
         scanData.bag_id = text;
@@ -149,7 +279,7 @@ function updateInstruction() {
     if (currentStep === 'BIN') {
         instr.innerText = "Scan Bin QR";
     } else {
-        instr.innerText = `Bin: ${ scanData.bin_id } - Scan Bag`;
+        instr.innerText = `Bin: ${scanData.bin_id} - Scan Bag`;
     }
 }
 
@@ -180,10 +310,11 @@ document.getElementById('manual-input').addEventListener('keypress', function (e
 function showMessage(msg, type) {
     const el = document.getElementById('status-area');
     el.innerText = msg;
-    el.className = `status ${ type } `;
+    el.className = `status ${type}`;
     el.classList.remove('hidden');
 }
 
+// [SECTION: API]
 async function submitData() {
     // Add to queue instead of submitting directly
     const scanToQueue = {
@@ -207,8 +338,8 @@ async function submitData() {
     });
 
     // Show success message immediately
-    const queueInfo = scanQueue.length > 1 ? ` (${ scanQueue.length } in queue)` : '';
-    showMessage(`✓ Bag ${ scanData.bag_id } queued${ queueInfo } `, 'success');
+    const queueInfo = scanQueue.length > 1 ? ` (${scanQueue.length} in queue)` : '';
+    showMessage(`✓ Bag ${scanData.bag_id} queued${queueInfo}`, 'success');
 
     // PERSISTENT BIN LOGIC:
     // Stay on 'BAG' step, keep bin_id, clear bag_id
@@ -248,7 +379,7 @@ async function processQueue() {
             if (result.status === 'success') {
                 // Remove from queue after successful save
                 scanQueue.shift();
-                console.log(`✓ Saved: Bin ${ scan.bin_id } | Bag ${ scan.bag_id } `);
+                console.log(`✓ Saved: Bin ${scan.bin_id} | Bag ${scan.bag_id}`);
             } else {
                 // Keep in queue and retry after delay
                 console.error('Save failed, will retry:', result.message);
@@ -265,7 +396,7 @@ async function processQueue() {
 
     // Show completion message if all queued scans are processed
     if (queuedScansCount > 0) {
-        console.log(`✓ All ${ queuedScansCount } scans saved to server`);
+        console.log(`✓ All ${queuedScansCount} scans saved to server`);
         queuedScansCount = 0;
     }
 }
@@ -429,3 +560,13 @@ async function handleDownload() {
         showMessage('Network error while downloading', 'error');
     }
 }
+
+// [SECTION: EVENTS]
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Check for auth token
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.href = '/login';
+    }
+});
