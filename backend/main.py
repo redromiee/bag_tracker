@@ -86,19 +86,8 @@ async def read_login():
 
 
 # [SECTION: DATA]
-# Global cache for GSpread client
-cached_client = None
-cached_client_time = 0
-CACHE_DURATION = 3000  # Refresh token every 50 minutes (tokens last 60 mins)
-
-def get_gspread_client():
-    """Get or refresh cached GSpread client"""
-    global cached_client, cached_client_time
-    
-    current_time = time.time()
-    if cached_client and (current_time - cached_client_time < CACHE_DURATION):
-        return cached_client
-
+def get_sheet():
+    """Helper function to get authenticated sheet"""
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
     
@@ -112,19 +101,23 @@ def get_gspread_client():
         creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
     
     client = gspread.authorize(creds)
-    cached_client = client
-    cached_client_time = current_time
-    print("Refreshed GSpread client connection")
-    return client
-
-def get_sheet():
-    """Helper function to get authenticated sheet using cached client"""
-    client = get_gspread_client()
     return client.open("Bag Tracker Data").sheet1
 
 def get_users_sheet():
-    """Get the users sheet using cached client"""
-    client = get_gspread_client()
+    """Get the users sheet"""
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    
+    if creds_json:
+        creds_dict = json.loads(creds_json)
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    else:
+        creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+        if not os.path.exists(creds_path):
+            raise FileNotFoundError("credentials.json not found")
+        creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
+    
+    client = gspread.authorize(creds)
     return client.open("Bag Tracker Users").sheet1
 
 # Authentication Helper Functions
