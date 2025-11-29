@@ -944,9 +944,214 @@ body.dark-mode .modal-btn-cancel {
     border-color: var(--accent);
 }
 
+/* Custom Confirmation Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.modal-message {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn-cancel {
+    background: var(--bg-tertiary);
+    color: white;
+}
+
+body.dark-mode .modal-btn-cancel {
+    color: #000000;
+}
+
+.modal-btn-cancel:hover {
+    opacity: 0.8;
+}
+
+.modal-btn-confirm {
+    background: #FF3B30;
+    color: white;
+}
+
+.modal-btn-confirm:hover {
+    background: #E6342A;
+    transform: scale(1.02);
+}
+
+.modal-btn:active {
+    transform: scale(0.98);
+}
+
+.change-bin-btn-full {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 10px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
+    border: none;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.change-bin-btn-full:hover {
+    opacity: 0.8;
+}
+
+.change-bin-btn-full:active {
+    transform: scale(0.98);
+}
+
+/* Download Button */
+.download-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 2000;
+    width: 56px;
+    height: 56px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px var(--shadow);
+}
+
+.download-btn:active {
+    transform: scale(0.95);
+}
+
+.download-btn svg {
+    color: var(--text-primary);
+}
+
+/* Date Range Modal Specific Styles */
+.date-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.date-input-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.date-input {
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.date-input:focus {
+    border-color: var(--accent);
+}
+
 .date-range-hint {
     font-size: 0.85rem;
     color: var(--text-secondary);
     margin-bottom: 16px;
     font-style: italic;
+}
+
+/* Fix date picker icon in dark mode */
+body.dark-mode input[type="date"] {
+    color-scheme: dark;
+}
+
+body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
 }
