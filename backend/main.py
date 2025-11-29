@@ -51,6 +51,7 @@ class ScanData(BaseModel):
     bin_id: str
     bag_id: str
     scan_type: str  # "FWD" or "RTO"
+    username: str = "Unknown"  # Default to "Unknown" for backward compatibility
 
 class UserRegister(BaseModel):
     username: str
@@ -466,34 +467,6 @@ def check_approval(token_data: TokenData):
         
         return {
             "status": "success",
-            "approved": is_approved,
-            "approval_status": approval_status if approval_status else "Pending"
-        }
-    
-    except Exception as e:
-        print(f"Check approval error: {e}")
-        import traceback
-        traceback.print_exc()
-        return {"status": "error", "message": str(e), "approved": False}
-
-@app.post("/delete_scan")
-def delete_scan(data: ScanData):
-    print(f"Request to delete: Type={data.scan_type}, Bin={data.bin_id}, Bag={data.bag_id}")
-    
-    try:
-        sheet = get_sheet()
-        records = sheet.get_all_records()
-        
-        # Debug: print first record to see column names
-        if records:
-            print(f"Available columns: {list(records[0].keys())}")
-            print(f"First record: {records[0]}")
-        
-        # Find matching row (search backwards for most recent)
-        row_to_delete = None
-        for i in range(len(records) - 1, -1, -1):
-            record = records[i]
-            
             # Use exact column names from your sheet: 'Bin Name', 'Bag ID', 'Type'
             bin_name_value = str(record.get('Bin Name', ''))
             bag_id_value = str(record.get('Bag ID', ''))
