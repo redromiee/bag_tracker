@@ -476,6 +476,12 @@ def check_approval(token_data: TokenData):
             "approved": is_approved,
             "approval_status": approval_status if approval_status else "Pending"
         }
+    
+    except Exception as e:
+        print(f"Check approval error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e), "approved": False}
 
 @app.post("/delete_scan")
 def delete_scan(data: ScanData):
