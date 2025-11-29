@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Request, Depends, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 import os
@@ -11,6 +12,8 @@ import json
 import bcrypt
 import jwt
 from functools import wraps
+import time
+from collections import defaultdict
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -25,9 +28,24 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 TOKEN_EXPIRATION_DAYS = 7
 
+# Rate Limiting Configuration
+RATE_LIMIT_WINDOW = 60  # seconds
+RATE_LIMIT_MAX_REQUESTS = 5  # requests per window
+rate_limit_store = defaultdict(list)
+
 # Serve Frontend
 FRONTEND_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 app.mount("/static", StaticFiles(directory=FRONTEND_PATH), name="static")
+
+# Security Headers Middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 class ScanData(BaseModel):
     bin_id: str
@@ -68,8 +86,19 @@ async def read_login():
 
 
 # [SECTION: DATA]
-def get_sheet():
-    """Helper function to get authenticated sheet"""
+# Global cache for GSpread client
+cached_client = None
+cached_client_time = 0
+CACHE_DURATION = 3000  # Refresh token every 50 minutes (tokens last 60 mins)
+
+def get_gspread_client():
+    """Get or refresh cached GSpread client"""
+    global cached_client, cached_client_time
+    
+    current_time = time.time()
+    if cached_client and (current_time - cached_client_time < CACHE_DURATION):
+        return cached_client
+
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
     
@@ -83,23 +112,19 @@ def get_sheet():
         creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
     
     client = gspread.authorize(creds)
+    cached_client = client
+    cached_client_time = current_time
+    print("Refreshed GSpread client connection")
+    return client
+
+def get_sheet():
+    """Helper function to get authenticated sheet using cached client"""
+    client = get_gspread_client()
     return client.open("Bag Tracker Data").sheet1
 
 def get_users_sheet():
-    """Get the users sheet"""
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
-    
-    if creds_json:
-        creds_dict = json.loads(creds_json)
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-    else:
-        creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
-        if not os.path.exists(creds_path):
-            raise FileNotFoundError("credentials.json not found")
-        creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
-    
-    client = gspread.authorize(creds)
+    """Get the users sheet using cached client"""
+    client = get_gspread_client()
     return client.open("Bag Tracker Users").sheet1
 
 # Authentication Helper Functions
@@ -131,6 +156,23 @@ def verify_token(token: str) -> dict:
         return None
     except jwt.InvalidTokenError:
         return None
+
+# Rate Limiter Decorator
+def rate_limit(func):
+    @wraps(func)
+    async def wrapper(request: Request, *args, **kwargs):
+        client_ip = request.client.host
+        current_time = time.time()
+        
+        # Clean up old requests
+        rate_limit_store[client_ip] = [t for t in rate_limit_store[client_ip] if current_time - t < RATE_LIMIT_WINDOW]
+        
+        if len(rate_limit_store[client_ip]) >= RATE_LIMIT_MAX_REQUESTS:
+            return {"status": "error", "message": "Too many attempts. Please try again later."}
+        
+        rate_limit_store[client_ip].append(current_time)
+        return await func(request, *args, **kwargs) # Pass request to function
+    return wrapper
 
 # --- Data Retention & Cleanup Functions ---
 
@@ -274,7 +316,8 @@ def require_auth(func):
 
 # [SECTION: AUTH]
 @app.post("/register")
-def register(user: UserRegister):
+@rate_limit
+async def register(request: Request, user: UserRegister):
     """Register a new user"""
     try:
         users_sheet = get_users_sheet()
@@ -326,7 +369,8 @@ def register(user: UserRegister):
         return {"status": "error", "message": str(e)}
 
 @app.post("/login")
-def login(credentials: UserLogin):
+@rate_limit
+async def login(request: Request, credentials: UserLogin):
     """Login user and return JWT token"""
     try:
         users_sheet = get_users_sheet()

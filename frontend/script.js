@@ -379,7 +379,7 @@ async function processQueue() {
             if (result.status === 'success') {
                 // Remove from queue after successful save
                 scanQueue.shift();
-                console.log(`✓ Saved: Bin ${scan.bin_id} | Bag ${scan.bag_id}`);
+                // console.log(`✓ Saved: Bin ${scan.bin_id} | Bag ${scan.bag_id}`);
             } else {
                 // Keep in queue and retry after delay
                 console.error('Save failed, will retry:', result.message);
@@ -396,7 +396,7 @@ async function processQueue() {
 
     // Show completion message if all queued scans are processed
     if (queuedScansCount > 0) {
-        console.log(`✓ All ${queuedScansCount} scans saved to server`);
+        // console.log(`✓ All ${queuedScansCount} scans saved to server`);
         queuedScansCount = 0;
     }
 }
