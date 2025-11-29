@@ -1,0 +1,47 @@
+/* [SECTION: VARIABLES] */
+:root {
+    /* Light mode colors (default) */
+    --bg-primary: #f5f5f7;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #000000;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-inverse: #ffffff;
+    --accent: #007AFF;
+    --border: #d2d2d7;
+    --shadow: rgba(0, 0, 0, 0.1);
+
+    /* Legacy variables for compatibility */
+    --black: #000000;
+    --white: #ffffff;
+    --gray: #f5f5f7;
+    --text-dark: #1d1d1f;
+
+    /* Animation durations */
+    --transition-fast: 0.15s;
+    --transition-base: 0.3s;
+    --transition-slow: 0.5s;
+
+    /* Easing functions */
+    --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+    /* Success/Error colors */
+    --success: #34C759;
+    --error: #FF3B30;
+    --warning: #FF9500;
+    --info: #007AFF;
+}
+
+/* Dark mode colors */
+body.dark-mode {
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #ffffff;
+    --text-primary: #f5f5f7;
+    --text-secondary: #98989d;
+    --text-inverse: #000000;
+    --accent: #0a84ff;
+    --border: #38383a;
+    --shadow: rgba(255, 255, 255, 0.1);
+}

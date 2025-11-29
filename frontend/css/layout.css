@@ -1,0 +1,179 @@
+/* [SECTION: LAYOUT] */
+
+/* --- Selection Screen --- */
+#selection-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.split-half {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.split-half.black {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+.split-half.white {
+    background-color: var(--white);
+    color: var(--black);
+    border-top: 2px solid var(--black);
+}
+
+/* Dark Mode RTO Gradient */
+body.dark-mode .split-half.white {
+    background: linear-gradient(135deg, #0a84ff 0%, #0066cc 100%);
+    color: #ffffff;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.split-half:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+}
+
+.split-half::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.split-half:hover::before {
+    opacity: 1;
+}
+
+.split-half:hover {
+    transform: scale(1.02);
+}
+
+.split-half span {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* --- Scanning Screen --- */
+#scanning-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.header {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.step-indicator {
+    margin-bottom: 20px;
+}
+
+#current-instruction {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+#reader {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px var(--shadow);
+    background: #000;
+}
+
+#manual-entry {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    gap: 10px;
+}
+
+/* --- Recent Scans --- */
+.recent-scans {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.recent-scans h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.scan-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--bg-primary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.scan-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px var(--shadow);
+    border-color: var(--accent);
+}
+
+.scan-info {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.scan-type {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.scan-ids {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}

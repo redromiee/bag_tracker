@@ -1,0 +1,300 @@
+/* [SECTION: COMPONENTS] */
+
+/* --- Buttons --- */
+button {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-base) var(--ease-out);
+}
+
+button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+button:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+/* Ripple effect */
+button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+.back-btn:hover {
+    opacity: 0.7;
+}
+
+.change-bin-btn {
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.change-bin-btn:hover {
+    opacity: 0.8;
+}
+
+.change-bin-btn-full {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 10px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-inverse);
+    border: none;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.change-bin-btn-full:hover {
+    opacity: 0.8;
+}
+
+.change-bin-btn-full:active {
+    transform: scale(0.98);
+}
+
+.delete-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background-color: #FF3B30;
+    color: white;
+    border: none;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.delete-btn:hover {
+    background: var(--error);
+    color: white;
+    transform: scale(1.05);
+}
+
+/* --- Inputs --- */
+input[type="text"] {
+    flex: 1;
+    padding: 15px;
+    font-size: 1.2rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: border-color 0.2s, background 0.3s, color 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--accent);
+}
+
+/* Focus States */
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* --- Status Messages --- */
+.status {
+    width: 100%;
+    max-width: 500px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    animation: slideDown 0.3s var(--ease-out);
+    box-shadow: 0 44px 12px var(--shadow);
+}
+
+.success {
+    background-color: #34C759;
+    color: white;
+}
+
+.error {
+    background-color: #FF3B30;
+    color: white;
+}
+
+/* --- Modals --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    position: relative;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.modal-message {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn-cancel {
+    background: var(--bg-tertiary);
+    color: white;
+}
+
+body.dark-mode .modal-btn-cancel {
+    color: #000000;
+}
+
+.modal-btn-cancel:hover {
+    opacity: 0.8;
+}
+
+.modal-btn-confirm {
+    background: #FF3B30;
+    color: white;
+}
+
+.modal-btn-confirm:hover {
+    background: #E6342A;
+    transform: scale(1.02);
+}
+
+.modal-btn:active {
+    transform: scale(0.98);
+}
+
+/* --- Toast Notifications --- */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    min-width: 300px;
+    max-width: 500px;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    opacity: 0;
+    transition: all var(--transition-base) var(--ease-out);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.toast-success {
+    border-left: 4px solid var(--success);
+}
+
+.toast.toast-error {
+    border-left: 4px solid var(--error);
+}
+
+.toast-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.toast-content {
+    flex: 1;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 0 0 0 12px;
+    animation: toast-progress 3s linear;
+}
