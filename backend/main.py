@@ -475,6 +475,9 @@ def check_approval(token_data: TokenData):
             "status": "success",
             "approved": is_approved,
             "approval_status": approval_status if approval_status else "Pending"
+        }
+
+@app.post("/delete_scan")
 def delete_scan(data: ScanData):
     print(f"Request to delete: Type={data.scan_type}, Bin={data.bin_id}, Bag={data.bag_id}")
     
