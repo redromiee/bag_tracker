@@ -317,10 +317,12 @@ function showMessage(msg, type) {
 // [SECTION: API]
 async function submitData() {
     // Add to queue instead of submitting directly
+    const userName = localStorage.getItem('userName') || 'Unknown';
     const scanToQueue = {
         bin_id: scanData.bin_id,
         bag_id: scanData.bag_id,
         scan_type: scanType,
+        username: userName,
         timestamp: new Date().toISOString()
     };
 

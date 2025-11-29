@@ -475,34 +475,6 @@ def check_approval(token_data: TokenData):
             "status": "success",
             "approved": is_approved,
             "approval_status": approval_status if approval_status else "Pending"
-        }
-    
-    except Exception as e:
-        print(f"Check approval error: {e}\"")
-        import traceback
-        traceback.print_exc()
-        return {"status": "error", "message": str(e), "approved": False}
-
-
-# [SECTION: SCANNER]
-@app.post("/record_scan")
-def record_scan(data: ScanData):
-    ist_timezone = pytz.timezone('Asia/Kolkata')
-    now = datetime.datetime.now(ist_timezone)
-    date = now.strftime("%Y-%m-%d")  # Date only
-    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")  # Full timestamp
-    print(f"[{timestamp}] Received scan: Type={data.scan_type}, Bin={data.bin_id}, Bag={data.bag_id}")
-    
-    try:
-        sheet = get_sheet()
-        # Column order: Date, Timestamp, Type, Bin Name, Bag ID (removed Status)
-        sheet.append_row([date, timestamp, data.scan_type, data.bin_id, data.bag_id])
-        return {"status": "success", "data": data}
-    except Exception as e:
-        print(f"Error saving to sheet: {e}")
-        return {"status": "error", "message": str(e)}
-
-@app.post("/delete_scan")
 def delete_scan(data: ScanData):
     print(f"Request to delete: Type={data.scan_type}, Bin={data.bin_id}, Bag={data.bag_id}")
     
