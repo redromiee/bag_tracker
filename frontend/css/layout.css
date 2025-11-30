@@ -5,8 +5,11 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    /* Fallback */
     height: 100dvh;
-    /* Mobile browser support */
+    /* Fallback */
+    height: calc(var(--vh, 1vh) * 100);
+    /* Dynamic JS fix */
     width: 100vw;
     position: fixed;
     top: 0;
@@ -92,8 +95,11 @@ body.dark-mode .split-half.white {
     align-items: center;
     padding: 20px;
     height: 100vh;
+    /* Fallback */
     height: 100dvh;
-    /* Mobile browser support */
+    /* Fallback */
+    height: calc(var(--vh, 1vh) * 100);
+    /* Dynamic JS fix */
     overflow: hidden;
     animation: fadeIn 0.3s ease-in-out;
     gap: 15px;

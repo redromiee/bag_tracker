@@ -1,47 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+fetch('/verify_token', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ token: token })
+})
+.then(res => res.json())
+.then(data => {
+if (data.status !== 'success') {
+localStorage.removeItem('authToken');
+window.location.href = '/login';
+}
+});
+}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bag Tracker</title>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Modular CSS -->
-    <link rel="stylesheet" href="/static/css/variables.css">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link rel="stylesheet" href="/static/css/components.css">
-    <link rel="stylesheet" href="/static/css/layout.css">
-    <link rel="stylesheet" href="/static/css/animations.css">
-    <link rel="stylesheet" href="/static/css/pages.css">
-    <script>
-        // Auth check - redirect to login if not authenticated
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            window.location.href = '/login';
-        } else {
-            // Verify token
-            fetch('/verify_token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: token })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status !== 'success') {
-                        localStorage.removeItem('authToken');
-                        window.location.href = '/login';
-                    }
-                });
-        }
-
-        function logout() {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('userBranch');
-            window.location.href = '/login';
-        }
-    </script>
+function logout() {
+localStorage.removeItem('authToken');
+localStorage.removeItem('userName');
+localStorage.removeItem('userBranch');
+window.location.href = '/login';
+}
+</script>
 </head>
 
 <body>

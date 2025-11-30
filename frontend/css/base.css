@@ -13,6 +13,8 @@ body {
     color: var(--accent);
     cursor: pointer;
     transition: opacity 0.2s;
+    overflow: hidden;
+    /* Prevent scroll bouncing */
 }
 
 /* Smooth Scrolling */
