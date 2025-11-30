@@ -67,7 +67,10 @@ function updateRecentScansUI() {
     const scansList = document.getElementById('scans-list');
     const recentScansContainer = document.getElementById('recent-scans');
 
-    if (recentScans.length === 0) {
+    // Filter scans by current scan type
+    const filteredScans = recentScans.filter(scan => scan.scan_type === scanType);
+
+    if (filteredScans.length === 0) {
         recentScansContainer.classList.add('hidden');
         return;
     }
@@ -75,7 +78,7 @@ function updateRecentScansUI() {
     recentScansContainer.classList.remove('hidden');
     scansList.innerHTML = '';
 
-    recentScans.forEach((scan, index) => {
+    filteredScans.forEach((scan) => {
         const scanItem = document.createElement('div');
         scanItem.className = 'scan-item';
         scanItem.innerHTML = `
@@ -83,17 +86,17 @@ function updateRecentScansUI() {
                 <div class="scan-type">${scan.scan_type}</div>
                 <div class="scan-ids">Bin: ${scan.bin_id} | Bag: ${scan.bag_id}</div>
             </div>
-            <button class="delete-btn" onclick="deleteScan(${index})">Delete</button>
+            <button class="delete-btn" onclick="deleteScan('${scan.bin_id}', '${scan.bag_id}', '${scan.scan_type}')">Delete</button>
         `;
         scansList.appendChild(scanItem);
     });
 }
 
-async function deleteScan(index) {
-    const scan = recentScans[index];
+async function deleteScan(bin_id, bag_id, scan_type) {
+    const scan = { bin_id, bag_id, scan_type };
 
     // Show custom confirmation modal
-    const confirmed = await showConfirmModal(`Are you sure you want to delete this scan?\n\n${scan.scan_type} | Bin: ${scan.bin_id} | Bag: ${scan.bag_id}\n\nThis action cannot be undone.`);
+    const confirmed = await showConfirmModal(`Are you sure you want to delete this scan?\n\n${scan_type} | Bin: ${bin_id} | Bag: ${bag_id}\n\nThis action cannot be undone.`);
 
     if (!confirmed) {
         return; // User clicked "No" or cancelled
@@ -111,7 +114,13 @@ async function deleteScan(index) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            recentScans.splice(index, 1);
+            // Find and remove the scan from recentScans array
+            const index = recentScans.findIndex(s =>
+                s.bin_id === bin_id && s.bag_id === bag_id && s.scan_type === scan_type
+            );
+            if (index !== -1) {
+                recentScans.splice(index, 1);
+            }
             updateRecentScansUI();
             showMessage('Scan deleted successfully', 'success');
         } else {
@@ -227,6 +236,7 @@ function selectType(type) {
     // Reset scan flow
     currentStep = 'BIN';
     updateInstruction();
+    updateRecentScansUI(); // Refresh recent scans to show only current type
     startScanner(); // Ensure scanner is running
 }
 
