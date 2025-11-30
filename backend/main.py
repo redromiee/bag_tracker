@@ -323,8 +323,13 @@ async def register(request: Request, user: UserRegister):
                 return {"status": "error", "message": "Username already exists"}
         
         # Check if mobile number already exists (one mobile = one account)
+        # Normalize input mobile: remove spaces, ensure string
+        input_mobile = str(user.mobile).strip()
+        
         for existing_user in users:
-            if existing_user.get('Mobile') == user.mobile:
+            # Normalize stored mobile
+            stored_mobile = str(existing_user.get('Mobile', '')).strip()
+            if stored_mobile == input_mobile:
                 return {"status": "error", "message": "Mobile number already registered"}
         
         # Validate required fields

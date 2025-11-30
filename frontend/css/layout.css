@@ -5,6 +5,8 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
+    /* Mobile browser support */
     width: 100vw;
     position: fixed;
     top: 0;
@@ -23,6 +25,13 @@
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+}
+
+/* Mobile Optimization for Selection Screen */
+@media (max-width: 768px) {
+    .split-half {
+        font-size: 2.5rem;
+    }
 }
 
 .split-half.black {
@@ -83,9 +92,23 @@ body.dark-mode .split-half.white {
     align-items: center;
     padding: 20px;
     height: 100vh;
+    height: 100dvh;
+    /* Mobile browser support */
     overflow: hidden;
     animation: fadeIn 0.3s ease-in-out;
     gap: 15px;
+}
+
+/* Mobile Optimization for Scanning Screen */
+@media (max-width: 480px) {
+    #scanning-screen {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .header {
+        margin-bottom: 5px;
+    }
 }
 
 .header {
