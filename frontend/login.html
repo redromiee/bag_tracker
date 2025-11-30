@@ -69,9 +69,31 @@
         .auth-container {
             width: 100%;
             max-width: 440px;
+            max-height: 90vh;
+            overflow-y: auto;
             position: relative;
             z-index: 1;
             animation: slideUp 0.6s ease-out;
+            padding: 10px;
+        }
+
+        /* Custom scrollbar */
+        .auth-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .auth-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
 
         @keyframes slideUp {
@@ -93,11 +115,6 @@
             padding: 48px 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-            transition: transform 0.3s ease;
-        }
-
-        .auth-box:hover {
-            transform: translateY(-5px);
         }
 
         .auth-title {
@@ -301,14 +318,6 @@
             }
         }
 
-        /* Floating label effect */
-        .input-wrapper.has-value label,
-        .input-wrapper.is-focused label {
-            transform: translateY(-8px);
-            font-size: 0.85rem;
-            color: #667eea;
-        }
-
         /* Responsive */
         @media (max-width: 480px) {
             .auth-box {
@@ -318,38 +327,6 @@
             .auth-title {
                 font-size: 2rem;
             }
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 24px 0;
-            color: #9ca3af;
-            font-size: 0.85rem;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .divider span {
-            padding: 0 12px;
-        }
-
-        /* Icon styles for inputs */
-        .input-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-            font-size: 1.2rem;
-            pointer-events: none;
         }
     </style>
 </head>
