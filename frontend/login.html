@@ -484,6 +484,7 @@
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userName', data.user.name);
                     localStorage.setItem('userBranch', data.user.branch);
+                    localStorage.setItem('loginTime', Date.now().toString());
 
                     // Success feedback
                     loginBtn.innerHTML = '✓ Success!';

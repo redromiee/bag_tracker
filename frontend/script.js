@@ -573,12 +573,42 @@ async function handleDownload() {
     }
 }
 
+
 // [SECTION: EVENTS]
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Check for auth token
+// Auto-logout after 8 hours
+function checkSessionExpiry() {
+    const loginTime = localStorage.getItem('loginTime');
     const token = localStorage.getItem('authToken');
+
     if (!token) {
         window.location.href = '/login';
+        return;
     }
+
+    if (!loginTime) {
+        // If no login time is set, set it now (for existing sessions)
+        localStorage.setItem('loginTime', Date.now().toString());
+        return;
+    }
+
+    const currentTime = Date.now();
+    const elapsedTime = currentTime - parseInt(loginTime);
+    const eightHoursInMs = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+
+    if (elapsedTime >= eightHoursInMs) {
+        // Session expired - logout
+        localStorage.clear();
+        alert('⏰ Your session has expired after 8 hours. Please log in again.');
+        window.location.href = '/login';
+    }
+}
+
+// Check session expiry every minute
+setInterval(checkSessionExpiry, 60 * 1000);
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Check for auth token and session expiry
+    checkSessionExpiry();
 });
+
