@@ -1,24 +1,60 @@
-fetch('/verify_token', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ token: token })
-})
-.then(res => res.json())
-.then(data => {
-if (data.status !== 'success') {
-localStorage.removeItem('authToken');
-window.location.href = '/login';
-}
-});
-}
+<!DOCTYPE html>
+<html lang="en">
 
-function logout() {
-localStorage.removeItem('authToken');
-localStorage.removeItem('userName');
-localStorage.removeItem('userBranch');
-window.location.href = '/login';
-}
-</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Bag Tracker</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="/static/css/variables.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/animations.css">
+    <link rel="stylesheet" href="/static/css/pages.css">
+    <script>
+        // Visual Viewport Fix for Mobile Keyboard
+        function setVisualViewportHeight() {
+            const vh = window.visualViewport ? window.visualViewport.height * 0.01 : window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', setVisualViewportHeight);
+            window.visualViewport.addEventListener('scroll', setVisualViewportHeight);
+        }
+        window.addEventListener('resize', setVisualViewportHeight);
+        setVisualViewportHeight();
+
+        // Auth check - redirect to login if not authenticated
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/login';
+        } else {
+            // Verify token
+            fetch('/verify_token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        localStorage.removeItem('authToken');
+                        window.location.href = '/login';
+                    }
+                });
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userBranch');
+            window.location.href = '/login';
+        }
+    </script>
 </head>
 
 <body>
@@ -103,37 +139,39 @@ window.location.href = '/login';
         </div>
     </div>
 
+    <!-- Download Button -->
+    <div class="download-btn" onclick="showDownloadModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+    </div>
+
+    <!-- Download Modal -->
+    <div id="download-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3 class="modal-title">Download Scan Data</h3>
+            <div class="date-inputs">
+                <div class="date-input-group">
+                    <label for="start-date">From Date</label>
+                    <input type="date" id="start-date" class="date-input">
+                </div>
+                <div class="date-input-group">
+                    <label for="end-date">To Date</label>
+                    <input type="date" id="end-date" class="date-input">
+                </div>
+            </div>
+            <p class="date-range-hint">Maximum 7-day range allowed</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDownloadModal()">Cancel</button>
+                <button class="modal-btn modal-btn-confirm" onclick="handleDownload()">Download</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/script.js"></script>
 </body>
 
-</html><!-- Download Button -->
-<div class="download-btn" onclick="showDownloadModal()">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="7 10 12 15 17 10"></polyline>
-        <line x1="12" y1="15" x2="12" y2="3"></line>
-    </svg>
-</div>
-
-<!-- Download Modal -->
-<div id="download-modal" class="modal hidden">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-        <h3 class="modal-title">Download Scan Data</h3>
-        <div class="date-inputs">
-            <div class="date-input-group">
-                <label for="start-date">From Date</label>
-                <input type="date" id="start-date" class="date-input">
-            </div>
-            <div class="date-input-group">
-                <label for="end-date">To Date</label>
-                <input type="date" id="end-date" class="date-input">
-            </div>
-        </div>
-        <p class="date-range-hint">Maximum 7-day range allowed</p>
-        <div class="modal-buttons">
-            <button class="modal-btn modal-btn-cancel" onclick="closeDownloadModal()">Cancel</button>
-            <button class="modal-btn modal-btn-confirm" onclick="handleDownload()">Download</button>
-        </div>
-    </div>
-</div>
+</html>
