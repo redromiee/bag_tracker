@@ -14,13 +14,10 @@
     /* Legacy variables for compatibility */
     --black: #000000;
     --white: #ffffff;
-    --gray: #f5f5f7;
-    --text-dark: #1d1d1f;
 
     /* Animation durations */
     --transition-fast: 0.15s;
     --transition-base: 0.3s;
-    --transition-slow: 0.5s;
 
     /* Easing functions */
     --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
@@ -29,8 +26,6 @@
     /* Success/Error colors */
     --success: #34C759;
     --error: #FF3B30;
-    --warning: #FF9500;
-    --info: #007AFF;
 }
 
 /* Dark mode colors */
